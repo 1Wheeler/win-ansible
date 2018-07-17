@@ -1,9 +1,10 @@
 ---
 - name: Install IIS
-  hosts: windows
+  hosts: all
   gather_facts: true
   tasks:
-   - win_feature:
+  - name: install IIS Web-Server with sub features and management tools
+    win_feature:
        name: "windows"
        state: present
        restart: yes
