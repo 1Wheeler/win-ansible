@@ -1,0 +1,35 @@
+---
+- hosts: all
+  tasks:
+  - name: Check IE11 is present or not
+    win_reg_stat:
+      path: HKLM:\Software\Microsoft\Internet Explorer
+      name: SvcVersion
+    register: ieversion
+  - name: install the ie11
+    win_command: 'c:\provision\Install\IE\IE11-Windows6.1-x64-en-us.exe /passive /update-no /norestart /closeprograms'
+    register: command_result
+    when: ieversion.exists == false
+    failed_when: (command_result.rc not in [0,3010,40013,40008])
+  - name: install IE11 task return code
+    debug:
+      msg: Installed Internet Explorer version {{ command_result}}
+  - name: reboot after installation of IE11
+    win_reboot: 
+    when: ieversion.exists == false and  command_result.rc == 3010
+  - name: check IE11 is successfully installed or not
+    win_reg_stat:
+      path: HKLM:\Software\Microsoft\Internet Explorer
+      name: SvcVersion
+    register: ie11version
+  - name: show IE version installed
+    debug:
+      msg: Installed Internet Explorer version {{ ie11version}}
+  - name: install the IE11 when svcversion registry key is present and IE less than 11
+    win_command: 'c:\provision\Install\IE\IE11-Windows6.1-x64-en-us.exe /passive /update-no /norestart /closeprograms'
+    register: command_result_less_than_11
+    when: ie11version.value.split('.')[0] <  '11'
+    failed_when: (command_result_less_than_11.rc not in [0,3010,40013,40008])
+  - name: reboot check if successfully installed
+    win_reboot: 
+    when: command_result_less_than_11.changed == "true" and  command_result_less_than_11.rc == "3010"
