@@ -1,0 +1,9 @@
+---
+- hosts: all
+ gather_facts: false
+ tasks:
+   - name: Copy latest pester folder
+     win_copy:
+       src: ./../../tools/pester
+       dest: C:\Program Files\WindowsPowerShell\Modules/
+       register: output

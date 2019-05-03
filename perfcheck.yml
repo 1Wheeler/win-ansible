@@ -1,0 +1,22 @@
+- hosts: all
+ #gather_facts: false
+ tasks:
+   - name: ping the VM
+     win_ping:
+
+   - name: Copy all scripts files from Git to src/scripts folder
+     win_copy:
+       src: ./../scripts/
+       dest: c:\cmp\main\src\scripts/
+       force: yes
+
+   - name: Registry 'Config\AnnounceFlags' Update
+     win_regedit:
+       path: HKLM:\System\CurrentControlSet\Services\W32time\Config
+       name: AnnounceFlags
+       data: 5
+       type: dword
+
+   - name: Change Power scheme
+     win_power_plan:
+       name: High performance
