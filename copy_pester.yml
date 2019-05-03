@@ -1,7 +1,6 @@
 ---
 - hosts: all
- gather_facts: false
- tasks:
+  tasks:
    - name: Copy latest pester folder
      win_copy:
        src: ./../../tools/pester
